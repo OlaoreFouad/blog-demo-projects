@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CustomInput">
+        <attr name="types_enum">
+            <enum name="datetime" value="1"/>
+            <enum name="number" value="2"/>
+            <enum name="email" value="3"/>
+            <enum name="text" value="4"/>
+            <enum name="password" value="5"/>
+        </attr>
+        <attr name="hint" format="string"/>
+        <attr name="textOnError" format="string"/>
+        <attr name="min" format="integer"/>
+        <attr name="max" format="integer"/>
+    </declare-styleable>
+
+
+</resources>
