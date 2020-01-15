@@ -10,12 +10,10 @@
 	android:layout_width="0dp"
 	android:id="@+id/custom_input"
 	app:layout_constraintStart_toStartOf="parent"
-	tools:hint="Hint"
 	android:padding="16dp"
 	app:layout_constraintTop_toTopOf="parent"
 	android:background="@drawable/state_focused"
 	app:layout_constraintEnd_toEndOf="parent"
-	android:drawableEnd="@drawable/ic_view"
 	android:layout_height="wrap_content" />
 
   <TextView
@@ -23,7 +21,6 @@
 	android:id="@+id/validation_text"
 	app:layout_constraintTop_toBottomOf="@id/custom_input"
 	android:paddingTop="3dp"
-	tools:text="This is an amazing validation"
 	android:textSize="16sp"
 	android:textColor="@color/colorBlack"
 	android:layout_height="wrap_content" />

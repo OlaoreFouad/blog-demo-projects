@@ -27,6 +27,7 @@ class CustomInput @JvmOverloads
     var textOnError = "Invalid Input"
 
     private var inputIsDirty = false
+    private var isValid = false
 
     init {
         val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -38,16 +39,18 @@ class CustomInput @JvmOverloads
         max = typedArray.getInt(R.styleable.CustomInput_max, 0)
         hint = typedArray.getString(R.styleable.CustomInput_hint) ?: hint
         textOnError = typedArray.getString(R.styleable.CustomInput_textOnError) ?: textOnError
-        type = typedArray.getText(R.styleable.CustomInput_types_enum).toString().toInt()
+        type = typedArray.getText(R.styleable.CustomInput_types_enum)?.toString()?.toInt() ?: type
 
         typedArray.recycle()
 
         setInputType()
-        if (type != PASSWORD) {
-            custom_input.right
+        custom_input.hint = hint
+        if (type == PASSWORD) {
+            custom_input.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_view, 0)
         }
+        validation_text.text = textOnError
 
-        setPadding(16)
+        setPadding(48)
     }
 
     private fun setInputType() {
