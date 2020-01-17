@@ -20,11 +20,12 @@ class CustomInput @JvmOverloads
     constructor(val ctx: Context, val attributeSet: AttributeSet? = null, val defStyleAttr: Int = 0)
     : ConstraintLayout(ctx, attributeSet, defStyleAttr){
 
-    var type: Int = 4
+    var type: Int = TEXT
     var min = 0
     var max = 0
     var hint: String = "Enter text"
     var textOnError = "Invalid Input"
+    var length: Int = 1_000_000
 
     private var inputIsDirty = false
     private var isValid = false
@@ -38,8 +39,8 @@ class CustomInput @JvmOverloads
         min = typedArray.getInt(R.styleable.CustomInput_min, 0)
         max = typedArray.getInt(R.styleable.CustomInput_max, 0)
         hint = typedArray.getString(R.styleable.CustomInput_hint) ?: hint
-        textOnError = typedArray.getString(R.styleable.CustomInput_textOnError) ?: textOnError
         type = typedArray.getText(R.styleable.CustomInput_types_enum)?.toString()?.toInt() ?: type
+        textOnError = typedArray.getString(R.styleable.CustomInput_textOnError) ?: ValidationErrors.getError(type)
 
         typedArray.recycle()
 
@@ -47,6 +48,9 @@ class CustomInput @JvmOverloads
         custom_input.hint = hint
         if (type == PASSWORD) {
             custom_input.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_view, 0)
+            if (min != 0) {
+                textOnError = typedArray.getString(R.styleable.CustomInput_textOnError) ?: ValidationErrors.getError(type, min)
+            }
         }
         validation_text.text = textOnError
 
@@ -61,6 +65,10 @@ class CustomInput @JvmOverloads
             PASSWORD -> InputType.TYPE_TEXT_VARIATION_PASSWORD
             else -> InputType.TYPE_CLASS_TEXT
         }
+    }
+
+    private fun configureInputTypes() {
+
     }
 
 }

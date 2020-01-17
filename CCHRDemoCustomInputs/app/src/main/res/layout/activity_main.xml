@@ -7,11 +7,29 @@
   tools:context=".MainActivity">
 
   <dev.iamfoodie.cchrdemo_custominputs.CustomInput
+	android:id="@+id/firstname_input"
 	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	app:hint="Your Firstname"
 	app:layout_constraintTop_toTopOf="parent"
-	app:hint="Enter text here"
-	app:types_enum="email"
 	app:textOnError="Invalid data passed in"
-	android:layout_height="wrap_content" />
+	app:types_enum="text" />
+
+  <dev.iamfoodie.cchrdemo_custominputs.CustomInput
+	android:id="@+id/password_input"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	app:hint="Your Password"
+	app:layout_constraintTop_toBottomOf="@id/firstname_input"
+	app:min="10"
+	app:types_enum="password" />
+
+  <dev.iamfoodie.cchrdemo_custominputs.CustomInput
+	android:id="@+id/email_input"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	app:hint="Your Email"
+	app:layout_constraintTop_toBottomOf="@id/password_input"
+	app:types_enum="email" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
