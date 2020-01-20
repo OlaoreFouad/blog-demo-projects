@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -22,7 +23,6 @@ const val EMAIL = 3
 const val TEXT = 4
 const val PASSWORD = 5
 
-@RequiresApi(Build.VERSION_CODES.O)
 class CustomInput @JvmOverloads
     constructor(val ctx: Context, val attributeSet: AttributeSet? = null, val defStyleAttr: Int = 0)
     : ConstraintLayout(ctx, attributeSet, defStyleAttr){
@@ -68,9 +68,13 @@ class CustomInput @JvmOverloads
         validation_text.text = textOnError
         validation_text.setTextColor(Color.RED)
         validation_text.visibility = View.INVISIBLE
-        custom_input.isFocusedByDefault = false
 
         custom_input.setOnFocusChangeListener { _, focused ->
+            if (!focused) {
+                if (!inputIsDirty && !checkForValidity()) {
+                    inputIsDirty = true
+                }
+            }
             var drawableVisibility: Pair<Int, Boolean> = if (focused) {
                 (if (checkForValidity()) R.drawable.state_focused else R.drawable.state_error) to checkForValidity()
             } else {
@@ -119,10 +123,14 @@ class CustomInput @JvmOverloads
                 }
             }
             NUMBER -> {
-                if (min != 0 || max != 0) {
-                    val n = custom_input.text.toString()
-                    if (!n.isEmpty()) {
+                val n = custom_input.text.toString()
+                if (n.isNotEmpty()) {
+                    if (min != 0 && max != 0) {
                         valid = (min <= n.toInt()) && (max >= n.toInt())
+                    } else if(min == 0) {
+                        valid = max <= n.toInt()
+                    } else {
+                        valid = min <= n.toInt()
                     }
                 }
             }
