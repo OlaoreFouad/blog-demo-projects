@@ -7,6 +7,7 @@ import android.os.Build
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -144,12 +145,15 @@ class CustomInput @JvmOverloads
     }
 
     private fun setInputType() {
-        custom_input.inputType = when(type) {
-            DATETIME -> InputType.TYPE_CLASS_DATETIME
-            NUMBER -> InputType.TYPE_CLASS_NUMBER
-            EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            PASSWORD -> InputType.TYPE_TEXT_VARIATION_PASSWORD
-            else -> InputType.TYPE_CLASS_TEXT
+        if (type != PASSWORD) {
+            custom_input.inputType = when(type) {
+                DATETIME -> InputType.TYPE_CLASS_DATETIME
+                NUMBER -> InputType.TYPE_CLASS_NUMBER
+                EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                else -> InputType.TYPE_CLASS_TEXT
+            }
+        } else {
+            custom_input.transformationMethod = PasswordTransformationMethod.getInstance()
         }
     }
 
