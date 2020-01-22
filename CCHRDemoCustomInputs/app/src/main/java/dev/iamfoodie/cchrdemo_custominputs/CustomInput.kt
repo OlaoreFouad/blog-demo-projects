@@ -126,12 +126,12 @@ class CustomInput @JvmOverloads
             NUMBER -> {
                 val n = custom_input.text.toString()
                 if (n.isNotEmpty()) {
-                    if (min != 0 && max != 0) {
-                        valid = (min <= n.toInt()) && (max >= n.toInt())
+                    valid = if (min != 0 && max != 0) {
+                        (min <= n.toInt()) && (max >= n.toInt())
                     } else if(min == 0) {
-                        valid = max <= n.toInt()
+                        max <= n.toInt()
                     } else {
-                        valid = min <= n.toInt()
+                        min <= n.toInt()
                     }
                 }
             }
