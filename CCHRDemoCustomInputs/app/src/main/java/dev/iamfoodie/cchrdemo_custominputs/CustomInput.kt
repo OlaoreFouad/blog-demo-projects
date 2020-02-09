@@ -11,6 +11,7 @@ import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import androidx.annotation.RequiresApi
