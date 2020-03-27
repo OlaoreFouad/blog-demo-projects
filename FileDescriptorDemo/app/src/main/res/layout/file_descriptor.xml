@@ -33,8 +33,7 @@
         android:background="@drawable/round_image"
         android:id="@+id/file_preview_image"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/test_image"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:layout_width="50dp"
@@ -45,7 +44,7 @@
         app:layout_constraintStart_toEndOf="@id/start_guideline"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
         app:layout_constraintEnd_toStartOf="@id/file_name"
-        android:src="@drawable/pdf"/>
+        android:src="@drawable/no_file_selected"/>
 
     <TextView
         android:id="@+id/file_name"
@@ -65,7 +64,7 @@
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:ems="7"
-        tools:text="No File Selected" />
+        android:text="No File Selected" />
 
     <ImageView
         android:layout_width="50dp"
