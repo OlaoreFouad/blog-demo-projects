@@ -3,6 +3,7 @@ package dev.iamfoodie.filedescriptiordemo.views
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,10 +25,6 @@ class FileDescriptor @JvmOverloads
         }
 
     private var fileType: FileType? = null
-        set(value) {
-            field = value
-            setUpFileType()
-        }
 
     init {
         val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -39,8 +36,7 @@ class FileDescriptor @JvmOverloads
         val typedArray = ctx.obtainStyledAttributes(attributeSet, R.styleable.FileDescriptor)
         val showInfoByDefault = typedArray.getBoolean(R.styleable.FileDescriptor_showInfo, false)
         file_info.visibility = View.GONE
-        file_preview_image.visibility = GONE
-        top_guideline.setGuidelineBegin(5)
+        file_preview_image.visibility = View.INVISIBLE
 
         if (showInfoByDefault) {
             file_info.visibility = View.VISIBLE
@@ -49,15 +45,15 @@ class FileDescriptor @JvmOverloads
 
     fun setUpFileDescriptor() {
         setUpFileType()
-//        val thumb = retrieveFileThumbnail()
-//        if (thumb == null) {
-//            Log.d("MainActivity", "thumbnail is null!")
-//        }
-//        file_preview_image.visibility = View.VISIBLE
-//        top_guideline.setGuidelineBegin(210)
+        val thumb = retrieveFileThumbnail()
+        if (thumb == null) {
+            Log.d("MainActivity", "thumbnail is null!")
+        }
+        file_preview_image.visibility = View.VISIBLE
+        file_preview_image.setImageBitmap(thumb)
     }
 
-    fun setUpFileTypeImage() {
+    private fun setUpFileTypeImage() {
         file_type_image.setImageResource(when(fileType) {
             FileType.DOCX -> R.drawable.docx
             FileType.IMAGE -> R.drawable.image
@@ -74,20 +70,20 @@ class FileDescriptor @JvmOverloads
         val resolver = ctx.contentResolver
         val type = resolver.getType(fileUri!!)!!
 
-        if (type.startsWith("image")) {
-            fileType = FileType.IMAGE
-        } else if (type.startsWith("video")) {
-            fileType = FileType.MP4
+        fileType = if (type.contains("image")) {
+            FileType.IMAGE
+        } else if (type.contains("video")) {
+            FileType.MP4
         } else if (type.contains("application/msword") || type.contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-            fileType = FileType.DOCX
+            FileType.DOCX
         } else if (type.contains("audio")) {
-            fileType = FileType.MP3
+            FileType.MP3
         } else if (type.contains("application/pdf")) {
-            fileType = FileType.PDF
+            FileType.PDF
         } else if (type.contains("text/plain")) {
-            fileType = FileType.TEXT
+            FileType.TEXT
         } else {
-            fileType = FileType.UNKNOWN
+            FileType.UNKNOWN
         }
 
         setUpFileTypeImage()
@@ -100,7 +96,8 @@ class FileDescriptor @JvmOverloads
         try {
 
             thumbnailBitmap = when(fileType) {
-                FileType.IMAGE -> ThumbnailGenerator.createImageThumbnail(fileUri!!, ctx)
+                FileType.IMAGE -> MediaStore.Images.Media.getBitmap(ctx.contentResolver, fileUri)
+                FileType.MP4 -> ThumbnailGenerator.createVideoThumbnail(fileUri)
                 else -> null
             }
 
