@@ -2,17 +2,31 @@ package dev.iamfoodie.filedescriptiordemo.views
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.AttributeSet
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.net.toUri
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import dev.iamfoodie.filedescriptiordemo.R
 import dev.iamfoodie.filedescriptiordemo.utils.ThumbnailGenerator
 import kotlinx.android.synthetic.main.file_descriptor.view.*
+import java.io.File
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.absoluteValue
+
+const val TAG: String = "FileDescriptor"
 
 class FileDescriptor @JvmOverloads
     constructor(private val ctx: Context, val attributeSet: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -23,6 +37,10 @@ class FileDescriptor @JvmOverloads
             field = value
             setUpFileDescriptor()
         }
+
+    var file: File? = null
+
+    var infoIsShown: Boolean
 
     private var fileType: FileType? = null
 
@@ -38,12 +56,21 @@ class FileDescriptor @JvmOverloads
         file_info.visibility = View.GONE
         file_preview_image.visibility = View.INVISIBLE
 
-        if (showInfoByDefault) {
+        infoIsShown = showInfoByDefault
+
+        if (this.infoIsShown) {
             file_info.visibility = View.VISIBLE
         }
+
+        info_file_image.setOnClickListener {
+            this.infoIsShown = !this.infoIsShown
+            file_info.visibility = if (this.infoIsShown) View.VISIBLE else View.GONE
+        }
+
     }
 
     fun setUpFileDescriptor() {
+        setFile()
         setUpFileType()
         val thumb = retrieveFileThumbnail()
         if (thumb == null) {
@@ -87,6 +114,16 @@ class FileDescriptor @JvmOverloads
         }
 
         setUpFileTypeImage()
+        file?.let {
+            Log.d(TAG,  "${ it.length() } ${ it.exists() }")
+            file_name.text = it.name
+            file_info.text = """
+                File Name: ${ it.name }
+                Path to File: ${ it.path }
+                Last Modified: ${ it.lastModified().format("MMM dd, YYYY HH:mm") }
+                Size: ${ it.length().valueInKb() } KB
+        """.trimIndent()
+        }
     }
 
     private fun retrieveFileThumbnail(): Bitmap? {
@@ -97,7 +134,9 @@ class FileDescriptor @JvmOverloads
 
             thumbnailBitmap = when(fileType) {
                 FileType.IMAGE -> MediaStore.Images.Media.getBitmap(ctx.contentResolver, fileUri)
-                FileType.MP4 -> ThumbnailGenerator.createVideoThumbnail(fileUri)
+                FileType.MP4 -> {
+                    ThumbnailUtils.createVideoThumbnail(file?.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
+                }
                 else -> null
             }
 
@@ -108,8 +147,32 @@ class FileDescriptor @JvmOverloads
         return thumbnailBitmap
     }
 
+    private fun setFile() {
+        val columns = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = ctx.contentResolver.query(
+            fileUri!!, columns, null, null, null
+        )
+        cursor?.let {
+            it.moveToFirst()
+            val columnIndex = cursor.getColumnIndex(columns[0])
+            val filePath = cursor.getString(columnIndex)
+            it.close()
+            file = File(filePath)
+        }
+
+    }
+
 }
 
 enum class FileType {
     IMAGE, TEXT, PDF, DOCX, MP4, MP3, UNKNOWN
+}
+
+fun Long.format(format: String): String {
+    return SimpleDateFormat(format).format(this.absoluteValue)
+}
+
+fun Long.valueInKb(): Double {
+    val kb: Double = this.div(1024).toDouble()
+    return kb
 }
