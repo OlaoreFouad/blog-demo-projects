@@ -143,7 +143,9 @@ class FileDescriptor @JvmOverloads
             val dataColumnIndex = cursor.getColumnIndex(columns[0])
             val filePath = cursor.getString(dataColumnIndex)
             it.close()
-            file = File(filePath)
+            filePath?.let {path ->
+                file = File(path)
+            }
         }
 
     }

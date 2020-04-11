@@ -34,7 +34,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 val fileUri = data.data
-                fileDescriptor.fileUri = fileUri
+                fileUri?.let {
+                    fileDescriptor.fileUri = it
+                }
             }
         }
     }
