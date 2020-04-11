@@ -1,29 +1,19 @@
 package dev.iamfoodie.filedescriptiordemo.views
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.util.AttributeSet
 import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toUri
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import dev.iamfoodie.filedescriptiordemo.R
 import dev.iamfoodie.filedescriptiordemo.utils.ThumbnailGenerator
 import kotlinx.android.synthetic.main.file_descriptor.view.*
 import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.math.absoluteValue
 
 const val TAG: String = "FileDescriptor"
@@ -72,12 +62,7 @@ class FileDescriptor @JvmOverloads
     fun setUpFileDescriptor() {
         setFile()
         setUpFileType()
-        val thumb = retrieveFileThumbnail()
-        if (thumb == null) {
-            Log.d("MainActivity", "thumbnail is null!")
-        }
-        file_preview_image.visibility = View.VISIBLE
-        file_preview_image.setImageBitmap(thumb)
+        retrieveFileThumbnail()
     }
 
     private fun setUpFileTypeImage() {
@@ -126,25 +111,26 @@ class FileDescriptor @JvmOverloads
         }
     }
 
-    private fun retrieveFileThumbnail(): Bitmap? {
-
-        var thumbnailBitmap: Bitmap? = null
+    private fun retrieveFileThumbnail() {
 
         try {
 
-            thumbnailBitmap = when(fileType) {
-                FileType.IMAGE -> MediaStore.Images.Media.getBitmap(ctx.contentResolver, fileUri)
-                FileType.MP4 -> {
-                    ThumbnailUtils.createVideoThumbnail(file?.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
-                }
-                else -> null
+            when(fileType) {
+                FileType.IMAGE -> file_preview_image.setImageBitmap(MediaStore.Images.Media.getBitmap(ctx.contentResolver, fileUri))
+                FileType.MP4 -> ThumbnailGenerator.createVideoThumbnail(ctx, fileUri, file_preview_image)
+                FileType.TEXT -> file_preview_image.setImageResource(R.drawable.txt)
+                FileType.PDF -> file_preview_image.setImageResource(R.drawable.pdf)
+                FileType.MP3 -> ThumbnailGenerator.createAudioThumbnail(ctx, fileUri!!)
+                FileType.DOCX -> file_preview_image.setImageResource(R.drawable.docx)
+                FileType.UNKNOWN -> file_preview_image.setImageResource(R.drawable.no_file_selected)
+                else -> file_preview_image.setImageResource(R.drawable.no_file_selected)
             }
+
+            file_preview_image.visibility = View.VISIBLE
 
         } catch (e: Exception) {
             Log.d("MainActivity", "Error occurred: ${ e.message }")
         }
-
-        return thumbnailBitmap
     }
 
     private fun setFile() {
@@ -154,8 +140,8 @@ class FileDescriptor @JvmOverloads
         )
         cursor?.let {
             it.moveToFirst()
-            val columnIndex = cursor.getColumnIndex(columns[0])
-            val filePath = cursor.getString(columnIndex)
+            val dataColumnIndex = cursor.getColumnIndex(columns[0])
+            val filePath = cursor.getString(dataColumnIndex)
             it.close()
             file = File(filePath)
         }

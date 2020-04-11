@@ -10,7 +10,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import com.bumptech.glide.Glide
 import java.io.File
 import java.lang.Exception
 import java.net.URI
@@ -19,12 +21,34 @@ class ThumbnailGenerator {
 
     companion object {
 
-        fun createVideoThumbnail(imageUri: Uri?): Bitmap? {
+        fun createVideoThumbnail(context: Context, imageUri: Uri?, imageView: ImageView): Bitmap? {
 
-            return ThumbnailUtils.createVideoThumbnail(
-                File(imageUri?.path).absolutePath, MediaStore.Video.Thumbnails.MICRO_KIND
-            )
+            val bitmap: Bitmap? = null
 
+            Glide.with(context)
+                .asBitmap()
+                .load(imageUri)
+                .into(imageView)
+
+            return bitmap
+
+        }
+
+        fun createAudioThumbnail(context: Context, fileUri: Uri): Bitmap? {
+            var bitmap: Bitmap? = null
+
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            val rawArt: ByteArray
+            val options = BitmapFactory.Options()
+
+            mediaMetadataRetriever.setDataSource(context, fileUri)
+            rawArt = mediaMetadataRetriever.embeddedPicture
+
+            if (null != rawArt) {
+                bitmap = BitmapFactory.decodeByteArray(rawArt, 0, rawArt.size, options)
+            }
+
+            return bitmap
         }
 
     }
