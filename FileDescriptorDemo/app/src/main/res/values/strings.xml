@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">File Descriptor Demo</string>
+    <string name="app_name">File Descriptor Demo</string>
     <string name="lorem">Lorem ipsum dolor sit amet consecteur adsplicingmnfnlifnifndfndkfndifnidffnsjdnfkjanfinkfdkdkanfjkanfakjnkjfnkjdfbkjdfkbfkdfakmejfnjfejfnajfnalDWDFJKSNKFJSFJHASCKJSNCJHKSNCHFAKduihwdjnwjkfsc bsfihfiuqHYIDFWC UDFUIhiduiwfiafyi fsdIDU</string>
     <string name="choose_file_text">Choose File</string>
 </resources>
